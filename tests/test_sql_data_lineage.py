@@ -309,7 +309,7 @@ class SQLDataLineageTest(unittest.TestCase):
     def test_columns_without_alias_in_expression(self):
         rows = exec('SELECT COUNT(user_id), COUNT(1), SUM(1) FROM users', self.conn)
         self.assertEqual(rows, [
-            ('COUNT(USER_ID)', 'TEST_DATA_LINEAGE', 'USERS', 'USER_ID', 1),
+            ('COUNT(USER_ID)', self.schema_name, 'USERS', 'USER_ID', 1),
             ('COUNT(1)', None, None, None, 2),
             ('SUM(1)', None, None, None, 3)
         ])
