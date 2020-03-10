@@ -98,3 +98,17 @@ Output
 | NAME | TEST_DATA_LINEAGE | USERS | NAME | wildcard | (null) | false | 2 |
 | STATUS_ID | TEST_DATA_LINEAGE | USERS | STATUS | wildcard | (null) | false | 3 |
 | STATUS_NAME | TEST_DATA_LINEAGE | DIM_STATUS | NAME | expression | COALESCE | false | 4 |
+
+## Running tests
+
+* install [PyEXASOL](https://github.com/badoo/pyexasol) driver
+* set Exasol credentials in tests/config.py
+
+```shell script
+cd tests/
+python -m unittest test_sql_data_lineage.py
+```
+
+## Authors
+
+* Dmitry Umarov <d.umarov@magiclab.co>
