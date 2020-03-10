@@ -962,7 +962,7 @@ end
 
 -- print result
 function show_result(columns)
-    local titles = "column_name varchar(128), source_schema_name varchar(64), source_object_name varchar(64), source_column_name varchar(64), column_type varchar(64), fname varchar(128), is_agg boolean, ordinal_position decimal(3,0)"
+    local titles = "column_name varchar(128), source_schema_name varchar(64), source_object_name varchar(64), source_column_name varchar(64), fname varchar(128), is_agg boolean, ordinal_position decimal(3,0)"
     local rows = {}
 
     for _, line in ipairs(get_table_index(columns)) do
@@ -984,7 +984,6 @@ function show_result(columns)
                     schema_name,
                     object_name,
                     column_name,
-                    v.column_type,
                     fname,
                     v.is_agg or false,
                     v.ordinal_position
