@@ -53,12 +53,16 @@ EXECUTE SCRIPT FN.SQL_DATA_LINEAGE(
 
 Output
 
-| COLUMN_NAME | SOURCE_SCHEMA_NAME | SOURCE_OBJECT_NAME | SOURCE_COLUMN_NAME | COLUMN_TYPE | FNAME  | IS_AGG | ORDINAL_POSITION |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| USER_ID | TEST_DATA_LINEAGE | USERS | USER_ID | wildcard | (null) | false | 1 |
-| NAME | TEST_DATA_LINEAGE | USERS | NAME | wildcard | (null) | false | 2 |
-| REGISTERED | TEST_DATA_LINEAGE | USERS | REGISTERED | wildcard | (null) | false | 3 |
-| STATUS | TEST_DATA_LINEAGE | USERS | STATUS | wildcard | (null) | false | 4 |
+```text
++-------------+--------------------+--------------------+--------------------+----------+--------+------------------+
+| COLUMN_NAME | SOURCE_SCHEMA_NAME | SOURCE_OBJECT_NAME | SOURCE_COLUMN_NAME | FNAME    | IS_AGG | ORDINAL_POSITION |
++-------------+--------------------+--------------------+--------------------+----------+--------+------------------+
+| USER_ID     | TEST_DATA_LINEAGE  | USERS              | USER_ID            | (null)   | false  | 1                |
+| NAME        | TEST_DATA_LINEAGE  | USERS              | NAME               | (null)   | false  | 2                |
+| REGISTERED  | TEST_DATA_LINEAGE  | USERS              | REGISTERED         | (null)   | false  | 3                |
+| STATUS      | TEST_DATA_LINEAGE  | USERS              | STATUS             | (null)   | false  | 4                |
++-------------+--------------------+--------------------+--------------------+----------+--------+------------------+
+```
 
 ```sql
 EXECUTE SCRIPT FN.SQL_DATA_LINEAGE(
@@ -92,12 +96,16 @@ EXECUTE SCRIPT FN.SQL_DATA_LINEAGE(
 
 Output
 
-| COLUMN_NAME | SOURCE_SCHEMA_NAME | SOURCE_OBJECT_NAME | SOURCE_COLUMN_NAME | COLUMN_TYPE | FNAME | IS_AGG | ORDINAL_POSITION |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| USER_ID | TEST_DATA_LINEAGE | USERS | USER_ID | wildcard | (null) | false | 1 |
-| NAME | TEST_DATA_LINEAGE | USERS | NAME | wildcard | (null) | false | 2 |
-| STATUS_ID | TEST_DATA_LINEAGE | USERS | STATUS | wildcard | (null) | false | 3 |
-| STATUS_NAME | TEST_DATA_LINEAGE | DIM_STATUS | NAME | expression | COALESCE | false | 4 |
+```text
++-------------+--------------------+--------------------+--------------------+----------+--------+------------------+
+| COLUMN_NAME | SOURCE_SCHEMA_NAME | SOURCE_OBJECT_NAME | SOURCE_COLUMN_NAME | FNAME    | IS_AGG | ORDINAL_POSITION |
++-------------+--------------------+--------------------+--------------------+----------+--------+------------------+
+| USER_ID     | TEST_DATA_LINEAGE  | USERS              | USER_ID            | (null)   | false  | 1                |
+| NAME        | TEST_DATA_LINEAGE  | USERS              | NAME               | (null)   | false  | 2                |
+| STATUS_ID   | TEST_DATA_LINEAGE  | USERS              | STATUS             | (null)   | false  | 3                |
+| STATUS_NAME | TEST_DATA_LINEAGE  | DIM_STATUS         | NAME               | COALESCE | false  | 4                |
++-------------+--------------------+--------------------+--------------------+----------+--------+------------------+
+```
 
 ## Running tests
 
