@@ -975,7 +975,7 @@ function show_result(columns)
         end
 
         if table.empty(v.source) then
-            rows[#rows+1] = {v.name, nil, nil, nil, nil, fname, v.is_agg or false, v.ordinal_position}
+            rows[#rows+1] = {v.name, nil, nil, nil, fname, v.is_agg or false, v.ordinal_position}
         else
             for i=1, #v.source do
                 local schema_name, object_name, column_name = string.match(v.source[i], '^(.+)%.(.+)%.(.+)$')
