@@ -715,10 +715,14 @@ end
 
 -- get column data from source
 function get_column_from_source(target_name, object_alias, source_map)
+    local out
     if object_alias == nil then
         for a, object_meta in pairs(source_map) do
             if object_meta.columns then
-                return get_column_by_name(target_name, object_meta.columns)
+                out = get_column_by_name(target_name, object_meta.columns)
+                if not(out == nil) then
+                    return out
+                end
             end
         end
     else
