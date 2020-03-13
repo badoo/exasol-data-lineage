@@ -1,4 +1,4 @@
-CREATE OR REPLACE LUA SCRIPT "SQL_DATA_LINEAGE" (sql, default_schema) RETURNS TABLE AS
+CREATE OR REPLACE LUA SCRIPT "SQL_DATA_LINEAGE" (sql_text, default_schema) RETURNS TABLE AS
 -- trim
 function trim(v)
     return string.gsub(v, "^%s*(.-)%s*$", "%1")
@@ -959,8 +959,8 @@ function get_main_query(tokens)
         end
     until found == false
 
-    local sql = trim(table.concat(table.slice(tokens, pos, pos_end)))
-    local out = sqlparsing.tokenize(sql)
+    local sql_text = trim(table.concat(table.slice(tokens, pos, pos_end)))
+    local out = sqlparsing.tokenize(sql_text)
     return out
 end
 
@@ -1007,7 +1007,7 @@ if default_schema_name == nil then
     error('Default schema is not defined.')
 end
 
-local tokens = sqlparsing.tokenize(sql)
+local tokens = sqlparsing.tokenize(sql_text)
 tokens = get_main_query(tokens)
 
 show_result(process_context(tokens, nil, 0))
