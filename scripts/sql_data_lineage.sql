@@ -351,6 +351,12 @@ function is_union_statement(tokens)
     return not(union == nil)
 end
 
+-- check is emit function
+function is_emits_keyword(tokens)
+    local res = sqlparsing.find(tokens, 1, true, true, sqlparsing.iswhitespaceorcomment, 'EMITS')
+    return not(res == nil)
+end
+
 -- process union statements
 function process_union(tokens, source_map)
     local out = {}
@@ -622,15 +628,23 @@ function process_columns(tokens, column_expr, source_map)
             end
         else
             local found_columns = 0
-            local expr_columns = extract_columns_from_expression(target_name)
+            local exp_tokens = sqlparsing.tokenize(target_name)
+            local names = {}
+            local expr_columns = {}
 
-            if target_alias == nil then
-                target_alias = target_name
+            if is_emits_keyword(exp_tokens) then
+                names, target_name = parse_emitting_func(exp_tokens)
+            else
+                if target_alias == nil then
+                    target_alias = target_name
+                end
+                names[#names+1] = target_alias
             end
 
-            ord = ord + 1
+            local expr_columns = extract_columns_from_expression(target_name)
+
             if not table.empty(expr_columns) then
-                local row = {name = target_alias, source = {}, column_type = column_type, ordinal_position = ord};
+                local row = {source = {}, column_type = column_type}
                 for k, v in pairs(expr_columns) do
                     local tmp_alias, tmp_name, _, _ = parse_column_expr(k)
                     tmp_name = strip_double_quotes(tmp_name)
@@ -659,7 +673,11 @@ function process_columns(tokens, column_expr, source_map)
                         found_columns = found_columns+1
                     end
                 end
-                out[#out+1] = row
+
+                for z=1,#names do
+                    ord = ord + 1
+                    out[#out+1] = {name = names[z], source = row.source, column_type = row.column_type, ordinal_position = ord}
+                end
             end
 
             if found_columns == 0 then
@@ -741,6 +759,44 @@ function get_column_from_source(target_name, object_alias, source_map)
             return get_column_by_name(target_name, source_map[object_alias].columns)
         end
     end
+end
+
+-- get columns from emitting function
+function parse_emitting_func(tokens)
+    local columns = {}
+    local func_expr
+
+    -- emits starts
+    local emits_start = sqlparsing.find(tokens, 1, true, true, sqlparsing.iswhitespaceorcomment, 'EMITS', '(')
+    if emits_start == nil then
+        return
+    end
+
+    -- emits ends
+    local emits_end = sqlparsing.find(tokens, emits_start[2], true, true, sqlparsing.iswhitespaceorcomment, ')')
+    if emits_end == nil then
+        return
+    end
+
+    emits_args_tokens = table.slice(tokens, emits_start[2]+1, emits_end[1]-1)
+    for i=1,#emits_args_tokens do
+        if sqlparsing.isidentifier(emits_args_tokens[i]) and not sqlparsing.iskeyword(emits_args_tokens[i]) then
+            columns[#columns+1] = strip_double_quotes(emits_args_tokens[i])
+        end
+    end
+
+    -- function starts
+    local func_start = sqlparsing.find(tokens, emits_start[1]-1, false, true, sqlparsing.iswhitespaceorcomment, sqlparsing.isidentifier, '(')
+    if func_start == nil then
+        return
+    end
+
+    -- function ends
+    local func_end = sqlparsing.find(tokens, func_start[2], true, true, sqlparsing.iswhitespaceorcomment, ')')
+    if func_end == nil then
+        return
+    end
+    return columns, table.concat(table.slice(tokens, func_start[1], func_end[1]))
 end
 
 -- get columns data from subquery
@@ -1010,5 +1066,5 @@ end
 local tokens = sqlparsing.tokenize(sql_text)
 tokens = get_main_query(tokens)
 
-show_result(process_context(tokens, nil, 0))
+show_result(process_context(tokens, nil))
 /

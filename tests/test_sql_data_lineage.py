@@ -313,3 +313,26 @@ class SQLDataLineageTest(unittest.TestCase):
             ('COUNT(1)', None, None, None, 2),
             ('SUM(1)', None, None, None, 3)
         ])
+
+    def test_emitting_func(self):
+        rows = exec("""
+            SELECT
+                  user_id
+                , %s.fake_emitting_func(
+                      s.id
+                    , u.registered
+                )
+                EMITS (
+                      metric_name VARCHAR(100)
+                    , metric_val DECIMAL(18,0)
+                )
+                FROM %s.users u
+                JOIN %s.dim_status s ON (u.status = s.id)
+        """ % (config.schema, config.schema, config.schema), self.conn)
+        self.assertEqual(rows, [
+             ('USER_ID', self.schema_name, 'USERS', 'USER_ID', 1),
+             ('METRIC_NAME', self.schema_name, 'DIM_STATUS', 'ID', 2),
+             ('METRIC_NAME', self.schema_name, 'USERS', 'REGISTERED', 2),
+             ('METRIC_VAL', self.schema_name, 'DIM_STATUS', 'ID', 3),
+             ('METRIC_VAL', self.schema_name, 'USERS', 'REGISTERED', 3)
+        ])
