@@ -18,6 +18,7 @@ The script analyzes SQL without running it by means of in-built SQL parsing libr
 * UNION
 * FROM
 * JOINS
+* EMITS
 * Subqueries
 * LOCAL keyword
 * quoted identifiers
