@@ -336,3 +336,35 @@ class SQLDataLineageTest(unittest.TestCase):
              ('METRIC_VAL', self.schema_name, 'DIM_STATUS', 'ID', 3),
              ('METRIC_VAL', self.schema_name, 'USERS', 'REGISTERED', 3)
         ])
+
+    def test_missing_aliases_in_from_and_join(self):
+        rows = exec("""
+            WITH
+                users AS (
+                    SELECT
+                          user_id
+                        , user_name
+                        , status_name
+                    FROM (
+                        SELECT
+                              user_id
+                            , name AS user_name
+                            , status AS status_id
+                        FROM %s.users
+                    )
+                    JOIN (
+                        SELECT
+                              id AS status_id
+                            , name AS status_name
+                        FROM %s.dim_status
+                    ) USING (status_id)
+                )
+
+            SELECT *
+            FROM users
+        """ % (config.schema, config.schema), self.conn)
+        self.assertEqual(rows, [
+            ('USER_ID', self.schema_name, 'USERS', 'USER_ID', 1),
+            ('USER_NAME', self.schema_name, 'USERS', 'NAME', 2),
+            ('STATUS_NAME', self.schema_name, 'DIM_STATUS', 'NAME', 3)
+        ])

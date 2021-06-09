@@ -120,4 +120,4 @@ python -m unittest test_sql_data_lineage.py
 
 ## Authors
 
-* Dmitry Umarov <d.umarov@magiclab.co>
+* Dmitry Umarov <d.umarov@team.bumble.com>
