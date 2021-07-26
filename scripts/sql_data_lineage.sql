@@ -127,15 +127,38 @@ CREATE OR REPLACE LUA SCRIPT "SQL_DATA_LINEAGE" (sql_text, default_schema) RETUR
         return out
     end
 
+    -- get columns of system object
+    function get_system_object_structure(o)
+        local out = {}
+        local success, res = pquery([[DESC ::o]], {o = o})
+        if success then
+            for i=1, #res do
+                out[i] = res[i][1]
+            end
+        end
+        return out
+    end
+
     -- check if exa object exists
     function is_exa_object(schema_name, object_name)
-        local success, res = pquery([[
+        local _, res = pquery([[
             SELECT 1
             FROM EXA_ALL_OBJECTS
             WHERE object_name = :o
                 AND root_name = :s
             LIMIT 1
         ]], {s = schema_name, o = object_name})
+        return (#res>0)
+    end
+
+    -- check if system object exists
+    function is_system_object(object_name)
+        local _, res = pquery([[
+            SELECT schema_name
+            FROM EXA_SYSCAT
+            WHERE object_name = :o
+            LIMIT 1
+        ]], {o = object_name})
         return (#res>0)
     end
 
@@ -181,9 +204,22 @@ CREATE OR REPLACE LUA SCRIPT "SQL_DATA_LINEAGE" (sql_text, default_schema) RETUR
         local pos = pos
         local s, o = parse_identifier(ident)
         local alias_name, alias_pos = get_alias(tokens, pos)
-        if is_exa_object(s, o) then
+        local cols
+        local is_exa_object = is_exa_object(s, o)
+        local is_system_object = is_system_object(o)
+
+        if is_system_object then
+            s = 'SYS'
+        end
+
+        if is_exa_object or is_system_object then
             local key = (alias_name or s .. '.' .. o)
-            local cols = get_exa_object_structure(s, o)
+
+            if is_exa_object then
+                cols = get_exa_object_structure(s, o)
+            else
+                cols = get_system_object_structure(o)
+            end
 
             out_source_map[key] = {columns = {}, ordinal_position = ord}
 

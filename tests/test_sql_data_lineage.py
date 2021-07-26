@@ -368,3 +368,44 @@ class SQLDataLineageTest(unittest.TestCase):
             ('USER_NAME', self.schema_name, 'USERS', 'NAME', 2),
             ('STATUS_NAME', self.schema_name, 'DIM_STATUS', 'NAME', 3)
         ])
+
+    def test_sys_object(self):
+        rows = exec("""
+            SELECT * FROM EXA_DBA_OBJECT_SIZES
+        """ % (), self.conn)
+        self.assertEqual(rows, [
+            ('OBJECT_NAME', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'OBJECT_NAME', 1),
+            ('OBJECT_TYPE', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'OBJECT_TYPE', 2),
+            ('RAW_OBJECT_SIZE', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'RAW_OBJECT_SIZE', 3),
+            ('MEM_OBJECT_SIZE', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'MEM_OBJECT_SIZE', 4),
+            ('RAW_OBJECT_SIZE_LIMIT', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'RAW_OBJECT_SIZE_LIMIT', 5),
+            ('CREATED', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'CREATED', 6),
+            ('LAST_COMMIT', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'LAST_COMMIT', 7),
+            ('OWNER', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'OWNER', 8),
+            ('OBJECT_ID', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'OBJECT_ID', 9),
+            ('OBJECT_IS_VIRTUAL', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'OBJECT_IS_VIRTUAL', 10),
+            ('ROOT_NAME', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'ROOT_NAME', 11),
+            ('ROOT_TYPE', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'ROOT_TYPE', 12),
+            ('ROOT_ID', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'ROOT_ID', 13)
+        ])
+
+    def test_sys_object_with_alias(self):
+        rows = exec("""
+            SELECT T.*, CURRENT_DATE AS DT FROM SYS.EXA_DBA_OBJECT_SIZES T
+        """ % (), self.conn)
+        self.assertEqual(rows, [
+            ('OBJECT_NAME', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'OBJECT_NAME', 1),
+            ('OBJECT_TYPE', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'OBJECT_TYPE', 2),
+            ('RAW_OBJECT_SIZE', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'RAW_OBJECT_SIZE', 3),
+            ('MEM_OBJECT_SIZE', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'MEM_OBJECT_SIZE', 4),
+            ('RAW_OBJECT_SIZE_LIMIT', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'RAW_OBJECT_SIZE_LIMIT', 5),
+            ('CREATED', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'CREATED', 6),
+            ('LAST_COMMIT', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'LAST_COMMIT', 7),
+            ('OWNER', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'OWNER', 8),
+            ('OBJECT_ID', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'OBJECT_ID', 9),
+            ('OBJECT_IS_VIRTUAL', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'OBJECT_IS_VIRTUAL', 10),
+            ('ROOT_NAME', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'ROOT_NAME', 11),
+            ('ROOT_TYPE', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'ROOT_TYPE', 12),
+            ('ROOT_ID', 'SYS', 'EXA_DBA_OBJECT_SIZES', 'ROOT_ID', 13),
+            ('DT', None, None, None, 14)
+        ])
